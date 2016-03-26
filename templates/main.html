@@ -1,0 +1,24 @@
+{% extends "index.html" %}
+{% block content %} 
+<div class="neighborhood-guides">
+        <div class="container">
+            <h2>Team Guides</h2>
+            <p>Not sure which team to visit?</p>
+			{% if login_session.get('credentials') is not none %}
+			<button type="button"><a href = "\new\">New Team</a></button>
+			{% endif %}
+        </div>
+    <div class="learn-more">
+	  <div class="container">
+		<div class="row">
+		  {% for team in teams%}
+	              <div class="col-md-4">
+			<h3>{{team.name}}</h3>
+			<p>{{team.description}}.</p>
+			<p><a href="/index/{{team.id}}">See the players in this team.</a></p>
+	             </div>
+		 {% endfor %}
+       	       </div>
+	  </div>
+    </div>
+{% endblock %}
