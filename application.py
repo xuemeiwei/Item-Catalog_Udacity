@@ -16,10 +16,8 @@ from flask import make_response
 import requests
 import os
 
-#path = os.path.dirname(__file__)
-
 app = Flask(__name__)
-#CLIENT_ID = json.loads(open(path+'/client_secrets.json', 'r').read())['web']['client_id']
+CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())['web']['client_id']
 
 
 engine = create_engine('sqlite:///teamwithusers.db')
@@ -68,9 +66,12 @@ def gconnect():
 
     try:
         # Upgrade the authorization code into a credentials object
-        oauth_flow = flow_from_clientsecrets(path+'/client_secrets.json', scope='')
-        oauth_flow.redirect_uri = 'postmessage'
-        credentials = oauth_flow.step2_exchange(code)
+	print "test11"
+        oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
+        print "test12"
+	oauth_flow.redirect_uri = 'postmessage'
+        print "test13"
+	credentials = oauth_flow.step2_exchange(code)
         
     except FlowExchangeError:
         response = make_response(json.dumps(
@@ -79,6 +80,7 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+    print "test1"
     # Check that the access token is valid.
     credentials = credentials.to_json()            
     credentials = json.loads(credentials)         
@@ -89,11 +91,13 @@ def gconnect():
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
 
+    print "test2"
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
 
+    print "test3"
     # Verify that the access token is used for the intended user.
     gplus_id = credentials['id_token']['sub']
     if result['user_id'] != gplus_id:
@@ -102,6 +106,7 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
+    print "test4"
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
@@ -118,6 +123,7 @@ def gconnect():
             ), 200)
         response.headers['Content-Type'] = 'application/json'
 
+    print "test5"
     # Store the access token in the session for later use.
     login_session['provider'] = 'google'
     response = make_response(json.dumps('Successfully connected user.', 200))
@@ -230,7 +236,7 @@ def addNewPlayer(team_ID):
 def deletePlayer(team_ID,player_ID):
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
-	return redirect(url_for('showItems',shop_ID = shop_ID))
+	return redirect(url_for('showTeams',team_ID = team_ID))
     login_user_id=getUserID(login_session['email'])
     playerToDelete=session.query(Player).filter_by(id=player_ID).one()
     if playerToDelete.user_id != login_user_id:
@@ -251,13 +257,13 @@ def editPlayer(team_ID,Player_ID):
     playerToEdit= session.query(Player).filter_by(id=player_ID).one()
     if playerToEdit.user_id != login_user_id:
 	flash("You can only manage your own team.")
-	return redirect(url_for('showteams',team_ID=team_ID))
+	return redirect(url_for('showTeams',team_ID=team_ID))
     if request.method == 'POST':
 	playerToEdit.name = request.form['name']
 	playerToEdit.description = request.form['description']
 	playerToEdit.salary = request.form['salary']
 	flash('%s has been successfully edited' % playerToEdit.name)
-	return redirect(url_for('showteams',team_ID = team_ID))
+	return redirect(url_for('showTeams',team_ID = team_ID))
     else:
 	return render_template('editPlayer.html',player=playerToEdit,login_session = login_session)
 
