@@ -143,8 +143,10 @@ def gconnect():
 
     # see if user exists, if it doesn't make a new one
     user_id = getUserID(data["email"])
+    print "****",user_id
     if not user_id:
         user_id = createUser(login_session)
+    print "weiqiao"
     login_session['user_id'] = user_id
 
     output = ''

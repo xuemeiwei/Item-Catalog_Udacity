@@ -6,7 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Team, Player, User
 
 
-engine = create_engine('postgresql://catalog:catalog123@localhost/catalog')
+engine = create_engine('sqlite:///teamwithusers.db')
 
 Base.metadata.bind = engine
 
