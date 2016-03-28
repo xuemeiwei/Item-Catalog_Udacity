@@ -31,7 +31,7 @@
 		{% endif %}
 		<div class="col-md-7"></div>
 	</div>
-	{% if toys !=[] %}
+	{% if players !=[] %}
 		<div class="row">
 			<div class="col-md-1"></div>
 			<div class="col-md-3">
@@ -43,7 +43,7 @@
 							{% if login_session.get('credentials') is not none %}
 							<button  onclick="window.location.replace('{{url_for('editPlayer', team_ID = team.id, player_ID=player.id ) }}')">Edit</button>
 							&nbsp
-							<button  onclick="myFunction('Are you sure to delete this player?','{{url_for('deletePlayer', team_ID = team.id, player_ID=palyer.id ) }}')">Delete</button>
+							<button  onclick="myFunction('Are you sure to delete this player?','{{url_for('deletePlayer', team_ID = team.id, player_ID=player.id ) }}')">Delete</button>
 							{% endif %}
 						</div>
 				{% endfor %}

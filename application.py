@@ -52,25 +52,18 @@ def login():
 #
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
-    print 'received state of %s' % request.args.get('state')
-    print 'login_sesion["state"] = %s' % login_session['state']
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
         return response
 
     gplus_id = request.args.get('gplus_id')
-    print "request.args.get('gplus_id') = %s" % request.args.get('gplus_id')
     code = request.data
-    print "received code of %s " % code
 
     try:
         # Upgrade the authorization code into a credentials object
-	print "test11"
         oauth_flow = flow_from_clientsecrets('client_secrets.json', scope='')
-        print "test12"
 	oauth_flow.redirect_uri = 'postmessage'
-        print "test13"
 	credentials = oauth_flow.step2_exchange(code)
         
     except FlowExchangeError:
@@ -80,7 +73,6 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print "test1"
     # Check that the access token is valid.
     credentials = credentials.to_json()            
     credentials = json.loads(credentials)         
@@ -91,13 +83,11 @@ def gconnect():
     h = httplib2.Http()
     result = json.loads(h.request(url, 'GET')[1])
 
-    print "test2"
     # If there was an error in the access token info, abort.
     if result.get('error') is not None:
         response = make_response(json.dumps(result.get('error')), 500)
         response.headers['Content-Type'] = 'application/json'
 
-    print "test3"
     # Verify that the access token is used for the intended user.
     gplus_id = credentials['id_token']['sub']
     if result['user_id'] != gplus_id:
@@ -106,12 +96,10 @@ def gconnect():
         response.headers['Content-Type'] = 'application/json'
         return response
 
-    print "test4"
     # Verify that the access token is valid for this app.
     if result['issued_to'] != CLIENT_ID:
         response = make_response(
             json.dumps("Token's client ID does not match app's."), 401)
-        print "Token's client ID does not match app's."
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -123,12 +111,10 @@ def gconnect():
             ), 200)
         response.headers['Content-Type'] = 'application/json'
 
-    print "test5"
     # Store the access token in the session for later use.
     login_session['provider'] = 'google'
     response = make_response(json.dumps('Successfully connected user.', 200))
 
-    print "#Get user info"
     userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
     params = {'access_token': credentials['token_response']['access_token'], 'alt': 'json'}
     answer = requests.get(userinfo_url, params=params)
@@ -139,14 +125,11 @@ def gconnect():
     login_session['username'] = data["name"]
     login_session['picture'] = data["picture"]
     login_session['email'] = data["email"]
-    print login_session['email']
 
     # see if user exists, if it doesn't make a new one
     user_id = getUserID(data["email"])
-    print "****",user_id
     if not user_id:
         user_id = createUser(login_session)
-    print "weiqiao"
     login_session['user_id'] = user_id
 
     output = ''
@@ -270,8 +253,8 @@ def editPlayer(team_ID,Player_ID):
 	return render_template('editPlayer.html',player=playerToEdit,login_session = login_session)
 
 # Edit a team
-@app.route('/index/<string:team_id>/edit/',methods = ['GET','POST'])
-def editTeam(team_id):
+@app.route('/index/<string:team_ID>/edit/',methods = ['GET','POST'])
+def editTeam(team_ID):
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
