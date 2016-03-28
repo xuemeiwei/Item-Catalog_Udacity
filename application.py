@@ -36,21 +36,20 @@ def showTeams():
 # Show players
 @app.route('/index/<string:team_ID>/')
 def showPlayers(team_ID):
-    print "show player"
     team = session.query(Team).filter_by(id=team_ID).one()
     user_id = team.user_id
     user = session.query(User).filter_by(id=user_id).one()
     players = session.query(Player).filter_by(team_id=team_ID).all()
     return render_template('players.html', players=players, team=team, user=user, login_session=login_session)
 
-# 
+# Login screen
 @app.route('/login/')
 def login():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html',STATE=state, login_session = login_session)
 
-#
+# Connect to google account
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
     if request.args.get('state') != login_session['state']:
@@ -147,7 +146,7 @@ def gconnect():
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
-#
+# Disconnect from current google account
 @app.route("/gdisconnect")
 def gdisconnect():
     credentials = login_session.get('credentials')
@@ -162,7 +161,6 @@ def gdisconnect():
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
     
-    print result['status']
     if result['status'] == '200':
         # Reset the user's session.
         del login_session['credentials']
@@ -186,7 +184,6 @@ def gdisconnect():
 # Create a new team
 @app.route('/new/',methods = ['GET','POST'])
 def newTeam():
-    print "create new team"
     if not checkLogin(login_session):
 	flash('You must login to create a team')
 	return redirect(url_for('showTeams'))
@@ -203,8 +200,7 @@ def newTeam():
 # Add a new player to team
 @app.route('/index/<string:team_ID>/add', methods=['GET', 'POST'])
 def addNewPlayer(team_ID):
-    print "add new player"
-    if not chekLogin(login_session):
+    if not checkLogin(login_session):
 	flash('You must login to add a new player')
 	return redirect(url_for('showTeams'))
     if request.method=='POST':
@@ -223,7 +219,6 @@ def addNewPlayer(team_ID):
 # Delete a player from team
 @app.route('/index/<string:team_ID>/<string:player_ID>/delete')
 def deletePlayer(team_ID,player_ID):
-    print "delete player"
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
 	return redirect(url_for('showTeams',team_ID = team_ID))
@@ -240,7 +235,6 @@ def deletePlayer(team_ID,player_ID):
 # Edit a player
 @app.route('/index/<string:team_ID>/<string:player_ID>/edit', methods=['GET', 'POST'])
 def editPlayer(team_ID,player_ID):
-    print "edit player"
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
 	return redirect(url_for('showTeams',team_ID = team_ID))
@@ -261,7 +255,6 @@ def editPlayer(team_ID,player_ID):
 # Edit a team
 @app.route('/index/<string:team_ID>/edit/',methods = ['GET','POST'])
 def editTeam(team_ID):
-    print "edit team"
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
@@ -273,7 +266,7 @@ def editTeam(team_ID):
     if request.method == 'POST':
 	teamToEdit.name = request.form['name']
 	teamToEdit.description = request.form['description']
-	return redirect(url_for('showTeams'),team_ID=team_ID)
+	return redirect(url_for('showTeams',team_ID=team_ID))
     else:
 	return render_template('editTeam.html',team = teamToEdit,login_session=login_session)
 
@@ -281,7 +274,6 @@ def editTeam(team_ID):
 # Delete a team
 @app.route('/index/<string:team_ID>/delete/',methods = ['GET','POST'])
 def deleteTeam(team_ID):
-    print "delete team"
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
@@ -295,7 +287,7 @@ def deleteTeam(team_ID):
     flash("You have deleted your team successfully.")
     return redirect(url_for('showTeams',team_ID=team_ID))   
 
-#
+# Redirect to the screen of Help
 @app.route('/help')
 def help():
     return render_template("help.html")
