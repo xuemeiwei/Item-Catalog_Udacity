@@ -36,11 +36,12 @@ def showTeams():
 # Show players
 @app.route('/index/<string:team_ID>/')
 def showPlayers(team_ID):
+    print "show player"
     team = session.query(Team).filter_by(id=team_ID).one()
     user_id = team.user_id
     user = session.query(User).filter_by(id=user_id).one()
     players = session.query(Player).filter_by(team_id=team_ID).all()
-    render_template('players.html', players=players, team=team, user=user, login_session=login_session)
+    return render_template('players.html', players=players, team=team, user=user, login_session=login_session)
 
 # 
 @app.route('/login/')
@@ -184,6 +185,7 @@ def gdisconnect():
 # Create a new team
 @app.route('/new/',methods = ['GET','POST'])
 def newTeam():
+    print "create new team"
     if not checkLogin(login_session):
 	flash('You must login to create a team')
 	return redirect(url_for('showTeams'))
@@ -200,6 +202,7 @@ def newTeam():
 # Add a new player to team
 @app.route('/index/<string:team_ID>/add', methods=['GET', 'POST'])
 def addNewPlayer(team_ID):
+    print "add new player"
     if not chekLogin(login_session):
 	flash('You must login to add a new player')
 	return redirect(url_for('showTeams'))
@@ -219,6 +222,7 @@ def addNewPlayer(team_ID):
 # Delete a player from team
 @app.route('/index/<string:team_ID>/<string:player_ID>/delete')
 def deletePlayer(team_ID,player_ID):
+    print "delete player"
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
 	return redirect(url_for('showTeams',team_ID = team_ID))
@@ -235,6 +239,7 @@ def deletePlayer(team_ID,player_ID):
 # Edit a player
 @app.route('/index/<string:team_ID>/<string:player_ID>/edit', methods=['GET', 'POST'])
 def editPlayer(team_ID,Player_ID):
+    print "edit player"
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
 	return redirect(url_for('showTeams',team_ID = team_ID))
@@ -255,6 +260,7 @@ def editPlayer(team_ID,Player_ID):
 # Edit a team
 @app.route('/index/<string:team_ID>/edit/',methods = ['GET','POST'])
 def editTeam(team_ID):
+    print "edit team"
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
@@ -274,6 +280,7 @@ def editTeam(team_ID):
 # Delete a team
 @app.route('/index/<string:team_ID>/delete/',methods = ['GET','POST'])
 def deleteTeam(team_ID):
+    print "delete team"
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
@@ -294,13 +301,13 @@ def help():
 
 #json APIs
 @app.route('/index/<string:team_ID>/JSON/')
-def shopJSON(team_ID):
+def teamJSON(team_ID):
     teams = session.query(Team).filter_by(id=team_ID).one()
     players = session.query(Player).filter_by(team_id = team_ID).all()
     return jsonify(Team=teams.serialize, Players = [g.serialize for g in players])
 
 @app.route('/index/<string:team_ID>/<string:player_ID>/JSON/')
-def toyJSON(team_ID,player_ID):
+def playerJSON(team_ID,player_ID):
     player = session.query(Team).filter_by(id=player_ID).one()
     return jsonify(Player = player.serialize)
 
