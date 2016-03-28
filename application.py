@@ -161,7 +161,8 @@ def gdisconnect():
     url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
     h = httplib2.Http()
     result = h.request(url, 'GET')[0]
-
+    
+    print result['status']
     if result['status'] == '200':
         # Reset the user's session.
         del login_session['credentials']
@@ -238,7 +239,7 @@ def deletePlayer(team_ID,player_ID):
 
 # Edit a player
 @app.route('/index/<string:team_ID>/<string:player_ID>/edit', methods=['GET', 'POST'])
-def editPlayer(team_ID,Player_ID):
+def editPlayer(team_ID,player_ID):
     print "edit player"
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
