@@ -1,24 +1,59 @@
 {% extends "index.html" %}
 {% block content %} 
-<div class="neighborhood-guides">
-        <div class="container">
-            <h2>Team Guides</h2>
-            <p>Not sure which team to visit?</p>
-			{% if login_session.get('credentials') is not none %}
-			<button type="button"><a href = "\new\">New Team</a></button>
-			{% endif %}
-        </div>
-    <div class="learn-more">
-	  <div class="container">
-		<div class="row">
-		  {% for team in teams%}
-	              <div class="col-md-4">
+<div class="container">
+    <h2>Team Guides</h2>
+    <p>Not sure which team to visit?</p>
+	{% if login_session.get('credentials') is not none %}
+	    <button type="button"><a href = "\new\">New Team</a></button>
+	{% endif %}
+</div>
+<div class="container1">
+
+	<div class="catlog">
+		<h1 style="color:blue;">All teams</h1>
+   		{%for team in teams%}
+		<p><a href="/index/{{team.id}}">{{team.name}}</a></p>
+    		{% endfor %}
+	</div>
+	<div class="latest_items">
+		<h1 style="color:blue">Latest players</h1>
+   	 	{%for player in latest_players%}
+		<p>{{player.name}}:{{player.description}}</p>
+	    	{% endfor%}
+	</div>
+</div>
+<!--div class="row row-offcanvas row-off-canvas-right">
+	<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
+	    <div class="list-group">
+		{%for team in teams%}
+		    <a href="/index/{{team.id}}">{{team.name}}</a>
+		{% endfor %}
+	    </div>
+	</div>
+	<div class="col-xs-12 col-sm-9">
+	    <p class="pull-right visible-xs">
+		<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">Toggle nav</button>
+	    </p>
+	    <p>Latest players</p>
+	    <div class="row">
+	        {%for player in latest_players%}
+		    <div class="col-xs-6 col-lg-4">
+			<h2>{{player.name}}</h2>
+			<p>{{player.description}}</p>
+		{%endfor%}
+	    </div>
+	</div>
+    </div>
+   div class="learn-more">
+	<div class="container">
+	    <div class="row">
+		{% for team in teams%}
+	            <div class="col-md-4">
 			<h3>{{team.name}}</h3>
 			<p>{{team.description}}.</p>
 			<p><a href="/index/{{team.id}}">See the players in this team.</a></p>
 	             </div>
 		 {% endfor %}
-       	       </div>
-	  </div>
-    </div>
+       	    </div>
+    </div-->
 {% endblock %}

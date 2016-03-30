@@ -31,7 +31,8 @@ session = DBSession()
 @app.route('/index/')
 def showTeams():
     teams = session.query(Team).all()
-    return  render_template('main.html', teams = teams, login_session = login_session)
+    latest_players = session.query(Player).order_by(Player.created_at.desc()).limit(5)
+    return  render_template('main.html', teams = teams, latest_players = latest_players, login_session = login_session)
 
 # Show players
 @app.route('/index/<string:team_ID>/')
