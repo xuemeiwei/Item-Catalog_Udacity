@@ -12,15 +12,15 @@ This is the third project for "Full Stack Web Developer Nanodegree" on Udacity, 
 
 ## Functions
 1. OAuth 2.0 is used to access Google APIs:
-  - Google account is used to login
+  - Google account is used to login.
   - Only the owner of each team can manage his team.
 2. JSON APIs are used to get information:
 
-	@app.route('/index/<string:team_ID>/JSON/')
+	@app.route('/index/<string:team_ID>/JSON/')<br>
 	def teamJSON(team_ID):
     		teams = session.query(Team).filter_by(id=team_ID).one()
     		players = session.query(Player).filter_by(team_id = team_ID).all()
-    	return jsonify(Team=teams.serialize, Players = [g.serialize for g in players])
+    		return jsonify(Team=teams.serialize, Players = [g.serialize for g in players])
 
 	@app.route('/index/<string:team_ID>/<string:player_ID>/JSON/')
 	def playerJSON(team_ID,player_ID):
