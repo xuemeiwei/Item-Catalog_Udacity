@@ -38,8 +38,8 @@
 				{% for player in players %}
 						<div class="menu-item">
 							<h3>{{player.name}}</h3>
-							<p>{{player.description}}</p>
-							<p class="menu-Salary">Salary:{{player.salary}}$</p>
+							<p>Description: {{player.description}}</p>
+							<p class="menu-Salary">Salary: {{player.salary}}$</p>
 							{% if login_session.get('credentials') is not none %}
 							<button  onclick="window.location.replace('{{url_for('editPlayer', team_ID = team.id, player_ID=player.id ) }}')">Edit</button>
 							&nbsp

@@ -1,27 +1,27 @@
 {% extends "index.html" %}
 {% block content %} 
-<div class="container">
-    <h2>Team Guides</h2>
-    <p>Not sure which team to visit?</p>
-	{% if login_session.get('credentials') is not none %}
-	    <button type="button"><a href = "\new\">New Team</a></button>
-	{% endif %}
-</div>
 <div class="container1">
 
 	<div class="catlog">
-		<h1 style="color:blue;">All teams</h1>
+		<h1 style="color:blue;">All Teams</h1>
    		{%for team in teams%}
 		<p><a href="/index/{{team.id}}">{{team.name}}</a></p>
     		{% endfor %}
 	</div>
 	<div class="latest_items">
-		<h1 style="color:blue">Latest players</h1>
+		<h1 style="color:blue">Latest Edited Players</h1>
    	 	{%for player in latest_players%}
-		<p>{{player.name}}:{{player.description}}</p>
+		<p><font style="color:blue">{{player.name}}</font>:{{player.team.name}}</p>
 	    	{% endfor%}
 	</div>
 </div>
+<div class="container">
+    <p>Not sure which team to visit?
+	{% if login_session.get('credentials') is not none %}
+	    <button type="button"><a href = "\new\">Create Your Own Team</a></button>
+	{% endif %}
+    </p>
+<div>
 <!--div class="row row-offcanvas row-off-canvas-right">
 	<div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar">
 	    <div class="list-group">
