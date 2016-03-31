@@ -15,12 +15,13 @@ This is the third project for "Full Stack Web Developer Nanodegree" on Udacity, 
   - Google account is used to login
   - Only the owner of each team can manage his team.
 2. JSON APIs are used to get information:
+<br>
 	@app.route('/index/<string:team_ID>/JSON/')
 	def teamJSON(team_ID):
     		teams = session.query(Team).filter_by(id=team_ID).one()
     		players = session.query(Player).filter_by(team_id = team_ID).all()
     	return jsonify(Team=teams.serialize, Players = [g.serialize for g in players])
-
+<br>
 	@app.route('/index/<string:team_ID>/<string:player_ID>/JSON/')
 	def playerJSON(team_ID,player_ID):
     		player = session.query(Team).filter_by(id=player_ID).one()
