@@ -26,33 +26,33 @@ Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
-# Show all teams
 @app.route('/')
 @app.route('/index/')
 def showTeams():
+    """Show all teams"""
     teams = session.query(Team).all()
     latest_players = session.query(Player).order_by(Player.created_at.desc()).limit(5)
     return  render_template('main.html', teams = teams, latest_players = latest_players, login_session = login_session)
 
-# Show players
 @app.route('/index/<string:team_ID>/')
 def showPlayers(team_ID):
+    """Show all players"""
     team = session.query(Team).filter_by(id=team_ID).one()
     user_id = team.user_id
     user = session.query(User).filter_by(id=user_id).one()
     players = session.query(Player).filter_by(team_id=team_ID).all()
     return render_template('players.html', players=players, team=team, user=user, login_session=login_session)
 
-# Login screen
 @app.route('/login/')
 def login():
+    """Display login screen"""
     state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in xrange(32))
     login_session['state'] = state
     return render_template('login.html',STATE=state, login_session = login_session)
 
-# Connect to google account
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """Connect to google account"""
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -147,9 +147,9 @@ def gconnect():
     flash("you are now logged in as %s" % login_session['username'])
     return output
 
-# Disconnect from current google account
 @app.route("/gdisconnect")
 def gdisconnect():
+    """Disconnect from current google account"""
     credentials = login_session.get('credentials')
     # Only disconnect a connected user.
     if not checkLogin(login_session):
@@ -182,9 +182,9 @@ def gdisconnect():
         flash('Failed to revoke token for given user.')
         return redirect(url_for('showTeams'))
 
-# Create a new team
 @app.route('/new/',methods = ['GET','POST'])
 def newTeam():
+    """Create a new team"""
     if not checkLogin(login_session):
 	flash('You must login to create a team')
 	return redirect(url_for('showTeams'))
@@ -198,9 +198,9 @@ def newTeam():
     else:
 	return render_template('newTeam.html',login_session=login_session)
 
-# Add a new player to team
 @app.route('/index/<string:team_ID>/add', methods=['GET', 'POST'])
 def addNewPlayer(team_ID):
+    """Add a new player to team"""
     if not checkLogin(login_session):
 	flash('You must login to add a new player')
 	return redirect(url_for('showTeams'))
@@ -217,9 +217,9 @@ def addNewPlayer(team_ID):
     else:
 	return render_template('newPlayer.html',team_ID=team_ID,login_session=login_session)
 
-# Delete a player from team
 @app.route('/index/<string:team_ID>/<string:player_ID>/delete')
 def deletePlayer(team_ID,player_ID):
+    """Delete a player from team"""
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
 	return redirect(url_for('showTeams',team_ID = team_ID))
@@ -233,9 +233,9 @@ def deletePlayer(team_ID,player_ID):
     flash("You have deleted a player successfully.")
     return redirect(url_for('showTeams',team_ID=team_ID))
 
-# Edit a player
 @app.route('/index/<string:team_ID>/<string:player_ID>/edit', methods=['GET', 'POST'])
 def editPlayer(team_ID,player_ID):
+    """Edit a player"""
     if not checkLogin(login_session):
 	flash('You must login to manage a team.')
 	return redirect(url_for('showTeams',team_ID = team_ID))
@@ -253,9 +253,9 @@ def editPlayer(team_ID,player_ID):
     else:
 	return render_template('editPlayer.html',player=playerToEdit,login_session = login_session)
 
-# Edit a team
 @app.route('/index/<string:team_ID>/edit/',methods = ['GET','POST'])
 def editTeam(team_ID):
+    """Edit a team"""
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
@@ -272,9 +272,9 @@ def editTeam(team_ID):
 	return render_template('editTeam.html',team = teamToEdit,login_session=login_session)
 
 
-# Delete a team
 @app.route('/index/<string:team_ID>/delete/',methods = ['GET','POST'])
 def deleteTeam(team_ID):
+    """Delete a team"""
     if not checkLogin(login_session):
         flash('You must login to manage a team.')
         return redirect(url_for('showTeams',team_ID = team_ID))
@@ -288,12 +288,11 @@ def deleteTeam(team_ID):
     flash("You have deleted your team successfully.")
     return redirect(url_for('showTeams',team_ID=team_ID))   
 
-# Redirect to the screen of Help
 @app.route('/help')
 def help():
+    """Redirect to the help screen"""
     return render_template("help.html")
 
-#json APIs
 @app.route('/index/<string:team_ID>/JSON/')
 def teamJSON(team_ID):
     teams = session.query(Team).filter_by(id=team_ID).one()
